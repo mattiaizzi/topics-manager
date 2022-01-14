@@ -14,6 +14,18 @@ const getTopics = async (req: Request, res: Response): Promise<void> => {
 const addTopic = async (req: Request, res: Response): Promise<void> => {
     try {
         const body = req.body as Pick<ITopic, "name" | "key" | "messageType">;
+
+        const fetched = await Topic.findOne({
+            key: body.key,
+        });
+
+        console.log(fetched);
+        
+        if (fetched) {
+            res.status(409).send(`Topic with key ${fetched.key} already exists`);
+            return;
+        }
+
         const topic: ITopic = new Topic({
             key: body.key,
             name: body.name,
